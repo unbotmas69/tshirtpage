@@ -1,0 +1,32 @@
+.content {
+    width: 70%;
+    margin: 0 auto;
+    padding: 6% 0 0 0;
+  }
+
+  .title {
+    text-align: center;
+  }
+
+  .title h1 {
+    font-size: 2rem;
+    color: black;
+    font-weight: bold;
+  }
+  
+  .slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .image {
+    height: auto;
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .image:hover {
+    transform: scale(1.05);
+  }
+  

@@ -1,0 +1,83 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 35vh;
+  color: black;
+  padding: 2% 0 2% 0;
+  border-top: 2px solid #ff2800;
+}
+
+.footerContent {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex-grow: 1;
+}
+
+.logo {
+  margin-left: 5%;
+  flex: 1;
+  max-width: 200px;
+}
+
+.hours,
+.contact,
+.social {
+  flex: 1;
+  margin: 10px;
+}
+
+.hours h4,
+.contact h4,
+.social h4 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.hours p,
+.contact p,
+.social p {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.socialIcons a {
+  display: inline-block;
+}
+
+.socialIcons img {
+  transition: transform 0.3s ease;
+}
+
+.socialIcons a:hover img {
+  transform: scale(1.1);
+}
+
+.createdBy {
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.createdBy a {
+  text-decoration: none;
+}
+
+@media (max-width: 768px) {
+  .footerContent {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hours,
+  .contact,
+  .social {
+    text-align: center;
+  }
+}
