@@ -1,0 +1,201 @@
+[
+  {
+    "id": "001",
+    "imgFront": "/img/cover/tshirt001F.jpg",
+    "imgBack": "/img/cover/tshirt001B.jpg",
+    "price": 15,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt001_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt001_white_b.jpg" 
+      },
+      { 
+        "color": "black", 
+        "imgFront": "/img/colors/tshirt001_black_f.jpg", 
+        "imgBack": "/img/colors/tshirt001_black_b.jpg" 
+      },
+      { 
+        "color": "red", 
+        "imgFront": "/img/colors/tshirt001_red_f.jpg", 
+        "imgBack": "/img/colors/tshirt001_red_b.jpg" 
+      },
+      { 
+        "color": "navy", 
+        "imgFront": "/img/colors/tshirt001_navy_f.jpg", 
+        "imgBack": "/img/colors/tshirt001_navy_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "002",
+    "imgFront": "/img/cover/tshirt002F.jpg",
+    "imgBack": "/img/cover/tshirt002B.jpg",
+    "price": 13,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt002_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt002_white_b.jpg" 
+      },
+      { 
+        "color": "gray", 
+        "imgFront": "/img/colors/tshirt002_gray_f.jpg", 
+        "imgBack": "/img/colors/tshirt002_gray_b.jpg" 
+      },
+      { 
+        "color": "green", 
+        "imgFront": "/img/colors/tshirt002_green_f.jpg", 
+        "imgBack": "/img/colors/tshirt002_green_b.jpg" 
+      },
+      { 
+        "color": "atomicblue", 
+        "imgFront": "/img/colors/tshirt002_atomicblue_f.jpg", 
+        "imgBack": "/img/colors/tshirt002_atomicblue_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "003",
+    "imgFront": "/img/cover/tshirt003F.jpg",
+    "imgBack": "/img/cover/tshirt003B.jpg",
+    "price": 16,
+    "colorsAvailable": [
+      { 
+        "color": "black", 
+        "imgFront": "/img/colors/tshirt003_black_f.jpg", 
+        "imgBack": "/img/colors/tshirt003_black_b.jpg" 
+      },
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt003_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt003_white_b.jpg" 
+      },
+      { 
+        "color": "true royal", 
+        "imgFront": "/img/colors/tshirt003_trueroyal_f.jpg", 
+        "imgBack": "/img/colors/tshirt003_trueroyal_b.jpg" 
+      },
+      { 
+        "color": "true red", 
+        "imgFront": "/img/colors/tshirt003_truered_f.jpg", 
+        "imgBack": "/img/colors/tshirt003_truered_b.jpg" 
+      },
+      { 
+        "color": "true navy", 
+        "imgFront": "/img/colors/tshirt003_truenavy_f.jpg", 
+        "imgBack": "/img/colors/tshirt003_truenavy_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "004",
+    "imgFront": "/img/cover/tshirt004F.jpg",
+    "imgBack": "/img/cover/tshirt004B.jpg",
+    "price": 16,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt004_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt004_white_b.jpg" 
+      },
+      { 
+        "color": "maroon", 
+        "imgFront": "/img/colors/tshirt004_maroon_f.jpg", 
+        "imgBack": "/img/colors/tshirt004_maroon_b.jpg" 
+      },
+      { 
+        "color": "gray", 
+        "imgFront": "/img/colors/tshirt004_gray_f.jpg", 
+        "imgBack": "/img/colors/tshirt004_gray_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "005",
+    "imgFront": "/img/cover/tshirt005F.jpg",
+    "imgBack": "/img/cover/tshirt005B.jpg",
+    "price": 21,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt005_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt005_white_b.jpg" 
+      },
+      { 
+        "color": "black", 
+        "imgFront": "/img/colors/tshirt005_black_f.jpg", 
+        "imgBack": "/img/colors/tshirt005_black_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "006",
+    "imgFront": "/img/cover/tshirt006F.jpg",
+    "imgBack": "/img/cover/tshirt006B.jpg",
+    "price": 15,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt006_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt006_white_b.jpg" 
+      },
+      { 
+        "color": "green", 
+        "imgFront": "/img/colors/tshirt006_green_f.jpg", 
+        "imgBack": "/img/colors/tshirt006_green_b.jpg" 
+      },
+      { 
+        "color": "orange", 
+        "imgFront": "/img/colors/tshirt006_orange_f.jpg", 
+        "imgBack": "/img/colors/tshirt006_orange_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "007",
+    "imgFront": "/img/cover/tshirt007F.jpg",
+    "imgBack": "/img/cover/tshirt007B.jpg",
+    "price": 20,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt007_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt007_white_b.jpg" 
+      },
+      { 
+        "color": "black", 
+        "imgFront": "/img/colors/tshirt007_black_f.jpg", 
+        "imgBack": "/img/colors/tshirt007_black_b.jpg" 
+      },
+      { 
+        "color": "yellow", 
+        "imgFront": "/img/colors/tshirt007_yellow_f.jpg", 
+        "imgBack": "/img/colors/tshirt007_yellow_b.jpg" 
+      }
+    ]
+  },
+  {
+    "id": "008",
+    "imgFront": "/img/cover/tshirt008F.jpg",
+    "imgBack": "/img/cover/tshirt008B.jpg",
+    "price": 17,
+    "colorsAvailable": [
+      { 
+        "color": "white", 
+        "imgFront": "/img/colors/tshirt008_white_f.jpg", 
+        "imgBack": "/img/colors/tshirt008_white_b.jpg" 
+      },
+      { 
+        "color": "gray", 
+        "imgFront": "/img/colors/tshirt008_gray_f.jpg", 
+        "imgBack": "/img/colors/tshirt008_gray_b.jpg" 
+      },
+      { 
+        "color": "aqua", 
+        "imgFront": "/img/colors/tshirt008_aqua_f.jpg", 
+        "imgBack": "/img/colors/tshirt008_aqua_b.jpg" 
+      }
+    ]
+  }
+]

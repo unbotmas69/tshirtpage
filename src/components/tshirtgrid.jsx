@@ -1,0 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./tshirtgrid.module.css";
+
+export default function TShirtGrid() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch("/apilocal/cover.json")
+      .then((res) => res.json())
+      .then((data) => setProducts(data));
+  }, []);
+
+  return (
+    <div className={styles.gridContainer}>
+      {products.map((shirt) => (
+        <Link key={shirt.id} href={`/order-form/${shirt.id}`} className={styles.card}>
+          <Image src={shirt.imgFront} alt={`T-shirt model ${shirt.id}`} width={200} height={200} className={styles.image} />
+          <p>Customize this model</p>
+        </Link>
+      ))}
+    </div>
+  );
+}

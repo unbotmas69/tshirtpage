@@ -1,4 +1,4 @@
-import { Header, Title, Carrusel, Categories, Manual, ContactForm, Footer } from "@/components";
+import { Header, Title, Carrusel, Categories, Manual, ContactForm, Footer, TShirtGrid } from "@/components";
 
 export default function Home() {
   return (
@@ -6,9 +6,8 @@ export default function Home() {
       <main className="overflow-hidden">
         <Header />
         <Title />
-        <Carrusel />
-        <Categories />
         <Manual />
+        <TShirtGrid />
         <ContactForm />
         <Footer />
       </main>

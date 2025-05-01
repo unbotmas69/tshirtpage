@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { fabric } from "fabric";
-//"fabric": "^6.6.2",
-//import * as fabric from 'fabric'
+// "fabric": "^6.6.2",
 import { saveAs } from "file-saver";
 
 export interface CanvasController {
@@ -48,10 +47,7 @@ export default class Canvas extends Component<Props, State> {
   state = {};
   canvas!: fabric.Canvas;
 
-  
-
   componentDidMount() {
-    //creating the canvas
     this.canvas = new fabric.Canvas("c", {
       renderOnAddRemove: true,
       width: 443,
@@ -63,48 +59,32 @@ export default class Canvas extends Component<Props, State> {
         ...(this as CanvasController),
         changeBackground: this.changeBackground,
       });
-    // setting the background image
+
     if (this.props.tshirt !== undefined) this.setBackground();
 
-    
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", this.setBackground);
+    }
+  }
+
+  componentWillUnmount() {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.setBackground);
+    }
   }
 
   setBackground = () => {
-    const imgUrl = '/img/shirts/tshirtBlackF.png';
+    const imgUrl = "/img/shirts/tshirtBlackF.png";
     fabric.Image.fromURL(imgUrl, (img) => {
       img.center();
-      if (window.innerWidth > 1000) {
-        const h: number = img.getScaledHeight();
-        const w: number = img.getScaledWidth();
-        this.canvas.setHeight(563);
-        this.canvas.setWidth(443);
-        img.scaleToHeight(this.canvas.getHeight());
-        img.scaleToWidth(this.canvas.getWidth());
-        this.canvas.setBackgroundImage(
-          img,
-          this.canvas.renderAll.bind(this.canvas)
-        );
-      } else
-      if (window.innerHeight >= 600 && window.innerWidth <= 1000) {
-        this.canvas.setHeight(563);
-        this.canvas.setWidth(443);
-        img.scaleToHeight(this.canvas.getHeight());
-        img.scaleToWidth(this.canvas.getWidth());
-        this.canvas.setBackgroundImage(
-          img,
-          this.canvas.renderAll.bind(this.canvas)
-        );
-      } else
-      if (window.innerHeight >= 400 && window.innerWidth <= 600) {
-        this.canvas.setHeight(563);
-        this.canvas.setWidth(443);
-        img.scaleToHeight(this.canvas.getHeight());
-        img.scaleToWidth(this.canvas.getWidth());
-        this.canvas.setBackgroundImage(
-          img,
-          this.canvas.renderAll.bind(this.canvas)
-        );
-      }
+      this.canvas.setHeight(563);
+      this.canvas.setWidth(443);
+      img.scaleToHeight(this.canvas.getHeight());
+      img.scaleToWidth(this.canvas.getWidth());
+      this.canvas.setBackgroundImage(
+        img,
+        this.canvas.renderAll.bind(this.canvas)
+      );
     });
   };
 
@@ -112,21 +92,9 @@ export default class Canvas extends Component<Props, State> {
     const imgUrl = `images/${this.props.tshirt}.png`;
     fabric.Image.fromURL(imgUrl, (img) => {
       img.center();
-      //if window.innerHeight is greater than img.getScaledHeight
       if (window.innerWidth > 1000) {
         this.setBackground();
-      }
-      if (window.innerHeight >= 600 && window.innerWidth <= 1000) {
-        this.canvas.setHeight(563);
-        this.canvas.setWidth(443);
-        img.scaleToHeight(this.canvas.getHeight());
-        img.scaleToWidth(this.canvas.getWidth());
-        this.canvas.setBackgroundImage(
-          img,
-          this.canvas.renderAll.bind(this.canvas)
-        );
-      }
-      if (window.innerHeight >= 400 && window.innerWidth <= 600) {
+      } else {
         this.canvas.setHeight(563);
         this.canvas.setWidth(443);
         img.scaleToHeight(this.canvas.getHeight());
@@ -137,7 +105,6 @@ export default class Canvas extends Component<Props, State> {
         );
       }
     });
-
     console.log(this.canvas.getHeight(), this.canvas.getWidth());
   };
 
@@ -260,7 +227,6 @@ export default class Canvas extends Component<Props, State> {
   };
 
   render() {
-    window.addEventListener("resize", this.setBackground);
     return <canvas id="c" style={{ border: "2px solid #b2b2b2" }} />;
   }
 }
