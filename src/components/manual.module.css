@@ -60,3 +60,33 @@
     color: black;
   }
   
+  @media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .left {
+    width: 100%;
+    order: -1; /* Mueve el título arriba */
+    padding-bottom: 10px;
+  }
+
+  .right {
+    width: 100%;
+    padding-top: 10px;
+    order: 1; /* Mueve los pasos hacia abajo */
+  }
+
+  .left h1 {
+    font-size: 2rem;
+  }
+
+  .step {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .number {
+    margin-bottom: 5px;
+  }
+}

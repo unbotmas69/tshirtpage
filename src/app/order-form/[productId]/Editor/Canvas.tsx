@@ -5,7 +5,7 @@ import { saveAs } from "file-saver";
 export interface CanvasController {
   canvas: fabric.Canvas;
   setBackground: (imgUrl: string) => void;
-    setScreenResize: () => void;
+  setScreenResize: () => void;
   changeBackground: (imagePath: string) => void;
   addImage: () => void;
   addText: (text: string, fontFamily: string, textColor: string) => void;
@@ -54,10 +54,27 @@ export default class Canvas extends Component<Props, State> {
   canvas!: fabric.Canvas;
 
   componentDidMount() {
+
+    if (this.canvas) {
+    this.canvas.dispose(); // Limpia el canvas anterior
+  }
+  
     this.canvas = new fabric.Canvas("c", {
       renderOnAddRemove: true,
       width: 443,
       height: 563,
+      selection: true,
+      preserveObjectStacking: true,
+    });
+
+    // Listener para editar texto con doble clic
+    this.canvas.on("mouse:dblclick", (opt) => {
+      const target = opt.target;
+      if (target && target.type === "textbox") {
+        (target as fabric.Textbox).enterEditing();
+        (target as fabric.Textbox).selectAll();
+        this.canvas.renderAll();
+      }
     });
 
     if (this.props.controller !== undefined)
@@ -66,7 +83,6 @@ export default class Canvas extends Component<Props, State> {
         changeBackground: this.changeBackground,
       });
 
-    // Solo se llama a setBackground si el producto tiene la propiedad imgFront
     if (this.props.product && this.props.product.imgFront) {
       this.setBackground(this.props.product.imgFront);
     }
@@ -83,7 +99,6 @@ export default class Canvas extends Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    // Solo si el producto cambió
     if (
       this.props.product?.imgFront &&
       this.props.product?.imgFront !== prevProps.product?.imgFront
@@ -91,9 +106,8 @@ export default class Canvas extends Component<Props, State> {
       this.setBackground(this.props.product.imgFront);
     }
   }
-  
+
   setBackground = (imgUrl: string) => {
-    // Establece la imagen de fondo en el lienzo
     fabric.Image.fromURL(imgUrl, (img) => {
       img.center();
       this.canvas.setHeight(563);
@@ -108,31 +122,50 @@ export default class Canvas extends Component<Props, State> {
   };
 
   setScreenResize = () => {
-    // Llama a setBackground cuando el tamaño de la pantalla cambie
     if (this.props.product && this.props.product.imgFront) {
       this.setBackground(this.props.product.imgFront);
     }
   };
 
   addImage = () => {
-    console.log("adding image");
     fabric.Image.fromURL("images/logo512.png", (img: fabric.Image) => {
+      img.set({
+        left: 50,
+        top: 50,
+        selectable: true,
+        hasControls: true,
+        hasBorders: true,
+      });
       this.canvas.add(img);
+      this.canvas.setActiveObject(img);
+      this.canvas.renderAll();
     });
   };
 
-  addText = (text: string, fontFamily: string, textColor: string) => {
-    const [w, h]: number[] = [this.canvas.getWidth(), this.canvas.getHeight()];
-    let t = new fabric.Textbox(text, {
-      left: w / 4,
-      top: h / 4,
-      fontFamily: fontFamily,
-      fontSize: 100,
-      fill: textColor,
-      editable: true,
-    });
-    this.canvas.add(t);
-  };
+addText = (text: string, fontFamily: string, textColor: string) => {
+  const w = this.canvas.getWidth();
+  const h = this.canvas.getHeight();
+
+  const editableText = new fabric.IText(text, {
+    left: w / 4,
+    top: h / 4,
+    fontFamily: fontFamily,
+    fontSize: 30,
+    fill: textColor,
+    selectable: true,
+    hasControls: true,
+    hasBorders: true,
+    lockMovementX: false,
+    lockMovementY: false,
+    evented: true,
+    objectCaching: false,
+  });
+
+  this.canvas.add(editableText);
+  this.canvas.setActiveObject(editableText);
+  this.canvas.renderAll();
+};
+
 
   updateText = (
     textObj: fabric.Textbox,
@@ -206,7 +239,7 @@ export default class Canvas extends Component<Props, State> {
         this.canvas.getElement().toBlob((data: any) => {
           saveAs(data, fileName + "." + format);
         });
-        this.setBackground(this.props.product?.imgFront || ""); // En caso de que imgFront no esté definido
+        this.setBackground(this.props.product?.imgFront || "");
       } else {
         this.canvas.renderAll();
         this.canvas.getElement().toBlob((data: any) => {
@@ -224,7 +257,6 @@ export default class Canvas extends Component<Props, State> {
       fileName = fileName.replace(/([^a-z0-9 ]+)/gi, "-");
       const data = JSON.stringify(this.canvas.toJSON());
       var blob = new Blob([data], { type: "application/json" });
-      console.log(data);
       saveAs(blob, fileName + ".tdp");
     } catch (error) {
       console.log(error);
@@ -234,7 +266,6 @@ export default class Canvas extends Component<Props, State> {
 
   importFromJSON = (json: object | fabric.Object) => {
     this.canvas.loadFromJSON(json, () => {
-      console.log("uploaded");
       this.canvas.renderAll();
     });
   };
@@ -247,28 +278,30 @@ export default class Canvas extends Component<Props, State> {
       this.canvas.setBackgroundImage(img, this.canvas.renderAll.bind(this.canvas));
     });
   };
-  
-  getImageBase64 = (format: string = "png", includeBackground: boolean = true): string => {
+
+  getImageBase64 = (
+    format: string = "png",
+    includeBackground: boolean = true
+  ): string => {
     const originalBackground = this.canvas.backgroundImage;
-  
+
     if (!includeBackground) {
       this.canvas.setBackgroundImage(null as any, this.canvas.renderAll.bind(this.canvas));
     }
-  
+
     const dataUrl = this.canvas.toDataURL({
       format: format as "png" | "jpeg",
       quality: 1.0,
     });
-  
+
     if (!includeBackground && originalBackground) {
       this.canvas.setBackgroundImage(originalBackground, this.canvas.renderAll.bind(this.canvas));
     }
-  
+
     return dataUrl;
   };
-  
+
   render() {
     return <canvas id="c" style={{ border: "2px solid #b2b2b2" }} />;
   }
-  
 }

@@ -85,3 +85,28 @@
     outline: none;
   }
   
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    align-items: center;
+    padding: 5% 20px;
+  }
+
+  .title {
+    width: 100%;
+    order: -1;
+    padding-bottom: 10px;
+  }
+
+  .form {
+    width: 100%;
+  }
+
+  .title h1 {
+    font-size: 1.8rem;
+  }
+
+  .title h3 {
+    font-size: 0.95rem;
+  }
+}

@@ -1,4 +1,5 @@
 .gridContainer {
+  align-items: center;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
@@ -12,14 +13,16 @@
   }
   
   .card {
+    display: flex;
     text-align: center;
     background-color: #fff;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px #0000001a;
     padding: 1rem;
-    transition: transform 0.2s ease;
+    transition: transform .2s;
     text-decoration: none;
-
+    flex-wrap: wrap;
+    justify-content: center;
   }
   
   .card:hover {
