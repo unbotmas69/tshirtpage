@@ -7,7 +7,7 @@ export interface CanvasController {
   setBackground: (imgUrl: string) => void;
   setScreenResize: () => void;
   changeBackground: (imagePath: string) => void;
-  addImage: () => void;
+  addImage: (url: string) => void;
   addText: (text: string, fontFamily: string, textColor: string) => void;
   updateText: (
     textObj: fabric.Textbox,
@@ -42,7 +42,7 @@ export enum CanvasOrderDirection {
 
 interface Props {
   product?: {
-    imgFront: string;
+    previewImage: string;
   } | null;
   controller?: (controller: CanvasController) => void;
 }
@@ -83,8 +83,8 @@ export default class Canvas extends Component<Props, State> {
         changeBackground: this.changeBackground,
       });
 
-    if (this.props.product && this.props.product.imgFront) {
-      this.setBackground(this.props.product.imgFront);
+    if (this.props.product && this.props.product.previewImage) {
+      this.setBackground(this.props.product.previewImage);
     }
 
     if (typeof window !== "undefined") {
@@ -100,10 +100,10 @@ export default class Canvas extends Component<Props, State> {
 
   componentDidUpdate(prevProps: Props) {
     if (
-      this.props.product?.imgFront &&
-      this.props.product?.imgFront !== prevProps.product?.imgFront
+      this.props.product?.previewImage &&
+      this.props.product?.previewImage !== prevProps.product?.previewImage
     ) {
-      this.setBackground(this.props.product.imgFront);
+      this.setBackground(this.props.product.previewImage);
     }
   }
 
@@ -122,25 +122,26 @@ export default class Canvas extends Component<Props, State> {
   };
 
   setScreenResize = () => {
-    if (this.props.product && this.props.product.imgFront) {
-      this.setBackground(this.props.product.imgFront);
+    if (this.props.product && this.props.product.previewImage) {
+      this.setBackground(this.props.product.previewImage);
     }
   };
 
-  addImage = () => {
-    fabric.Image.fromURL("images/logo512.png", (img: fabric.Image) => {
-      img.set({
-        left: 50,
-        top: 50,
-        selectable: true,
-        hasControls: true,
-        hasBorders: true,
-      });
-      this.canvas.add(img);
-      this.canvas.setActiveObject(img);
-      this.canvas.renderAll();
+addImage = (url: string) => {
+  fabric.Image.fromURL(url, (img: fabric.Image) => {
+    img.set({
+      left: 50,
+      top: 50,
+      selectable: true,
+      hasControls: true,
+      hasBorders: true,
     });
-  };
+    this.canvas.add(img);
+    this.canvas.setActiveObject(img);
+    this.canvas.renderAll();
+  });
+};
+
 
 addText = (text: string, fontFamily: string, textColor: string) => {
   const w = this.canvas.getWidth();
@@ -239,7 +240,7 @@ addText = (text: string, fontFamily: string, textColor: string) => {
         this.canvas.getElement().toBlob((data: any) => {
           saveAs(data, fileName + "." + format);
         });
-        this.setBackground(this.props.product?.imgFront || "");
+        this.setBackground(this.props.product?.previewImage || "");
       } else {
         this.canvas.renderAll();
         this.canvas.getElement().toBlob((data: any) => {

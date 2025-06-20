@@ -1,5 +1,5 @@
-export const BASE_URL = 'https://app-vyuyzj3tsa-uc.a.run.app';
-//export const BASE_URL = 'http://localhost:5000/t-shirtgala/us-central1/app';
+//export const BASE_URL = 'https://app-vyuyzj3tsa-uc.a.run.app';
+export const BASE_URL = 'http://localhost:5000/t-shirtgala/us-central1/app';
 
 export const FIREBASE_URL = BASE_URL;
 
@@ -16,5 +16,9 @@ export const requestMethods = {
 export const API = {
     ORDER: {
         NEW: '/api/newOrder'
+    },
+        PRODUCTS: {
+        ALL: '/api/products',
+        ID: '/api/products/:productId'
     }
 };

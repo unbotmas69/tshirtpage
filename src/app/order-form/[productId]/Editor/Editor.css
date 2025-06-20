@@ -14,6 +14,7 @@
 .expanded {
 	box-shadow: none !important;
 } */
+
 @media screen and (max-width: 450px) {
   .canvas-container {
     margin-left: -10% !important;

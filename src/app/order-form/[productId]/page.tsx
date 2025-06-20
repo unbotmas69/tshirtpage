@@ -6,14 +6,15 @@ import { Header, Footer } from "@/components";
 import styles from "./page.module.css";
 import Editor from './Editor/Editor';
 import Image from 'next/image';
-import { NewOrder } from "@/api/orders"; // 👈 REAL IMPORT
+import ProductsService from "../../../api/products";
+import { NewOrder } from "@/api/orders";
 
 export interface Product {
   id: string;
-  imgFront: string;
-  imgBack: string;
+  title: string;
+  previewImage: string;
   price: number;
-  colorsAvailable: {
+  colors: {
     color: string;
     imgFront: string;
     imgBack: string;
@@ -25,10 +26,16 @@ interface ShirtDetail {
   size: string;
 }
 
+interface CustomItem {
+  type: "image" | "text";
+  price: number;
+}
+
 export default function OrderForms() {
   const params = useParams();
   const productId = Array.isArray(params.productId) ? params.productId[0] : params.productId;
 
+  const [customItems, setCustomItems] = useState<CustomItem[]>([]);
   const [product, setProduct] = useState<Product | null>(null);
   const [qty, setQuantity] = useState(1);
   const [shirtDetails, setShirtDetails] = useState<ShirtDetail[]>([{ name: "", size: "" }]);
@@ -43,12 +50,11 @@ export default function OrderForms() {
   useEffect(() => {
     async function fetchProductData() {
       try {
-        const res = await fetch("/apilocal/cover.json");
-        const data = await res.json();
-        const foundProduct = data.find((item: Product) => item.id === productId);
-        setProduct(foundProduct || null);
+        const res = await ProductsService.ProductsById(productId);
+        setProduct(res);
       } catch (error) {
         console.error("Error loading product data:", error);
+        setProduct(null);
       }
     }
 
@@ -89,7 +95,7 @@ export default function OrderForms() {
     });
   };
 
-  const handleSubmit = async () => {  
+  const handleSubmit = async () => {
     const orderPayload = {
       name,
       supervisorName,
@@ -104,7 +110,6 @@ export default function OrderForms() {
       })),
       status: "New"
     };
-    console.log(orderPayload); 
 
     try {
       const response = await NewOrder(orderPayload);
@@ -126,31 +131,26 @@ export default function OrderForms() {
     }
   };
 
+  const addCustomItem = (item: CustomItem) => {
+    setCustomItems((prev) => [...prev, item]);
+  };
+
+  const customItemsTotal = customItems.reduce((sum, item) => sum + item.price, 0);
+  const totalPrice = ((product?.price ?? 0) + customItemsTotal) * qty;
+
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
   return (
     <div>
       <Header />
-      <main className={styles.orderFormMain}>
-        {product ? (
-          <div className={styles.productContainer}>
-            <h1 className={styles.productTitle}>T-Shirt Order Form</h1>
-            <p className={styles.productPrice}>
-              Base Price: <strong>${product.price}</strong>
-            </p>
-          </div>
-        ) : (
-          <p className={styles.loadingMessage}>Loading product details...</p>
-        )}
-      </main>
 
-      <Editor product={product} />
+      {product && <Editor product={product} addCustomItem={addCustomItem} />}
 
       <div className={styles.detailsSection}>
-        <h2>Order Details</h2>
+        <h2>Detalles de la orden</h2>
         <label>
-          Quantity:
+          Cantidad de playeras:
           <input
             type="number"
             min="1"
@@ -159,10 +159,11 @@ export default function OrderForms() {
             className={styles.quantityInput}
           />
         </label>
+        <p>Precio Total: <strong>${totalPrice.toFixed(2)}</strong></p>
 
         <div className={styles.buttonContainer}>
           <button className={styles.orderButton} onClick={handleOpenModal}>
-            Confirm Order
+            Confirmar orden
           </button>
         </div>
 
@@ -171,9 +172,9 @@ export default function OrderForms() {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Size</th>
-                <th>Action</th>
+                <th>Nombre a mostrar</th>
+                <th>Talla</th>
+                <th>Eliminar</th>
               </tr>
             </thead>
             <tbody>
@@ -193,7 +194,7 @@ export default function OrderForms() {
                       value={detail.size}
                       onChange={(e) => handleDetailChange(index, "size", e.target.value)}
                     >
-                      <option value="">Select</option>
+                      <option value=""></option>
                       <option value="XS">XS</option>
                       <option value="S">S</option>
                       <option value="M">M</option>
@@ -207,7 +208,7 @@ export default function OrderForms() {
                       className={styles.deleteButton}
                       onClick={() => handleDelete(index)}
                     >
-                      Delete
+                      Eliminar
                     </button>
                   </td>
                 </tr>
@@ -220,7 +221,7 @@ export default function OrderForms() {
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <h2>Confirm Order</h2>
+            <h2>Confirmar Orden</h2>
 
             <div className={styles.modalBody}>
               {customImage && (
@@ -234,8 +235,8 @@ export default function OrderForms() {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Name</th>
-                      <th>Size</th>
+                      <th>Nombre</th>
+                      <th>Talla</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -252,13 +253,13 @@ export default function OrderForms() {
             </div>
 
             <div className={styles.formSection}>
-              <h3>Contact Information</h3>
+              <h3>Informacion de contacto</h3>
               <form>
                 <label>
-                  Name:
+                  Nombre:
                   <input
                     type="text"
-                    placeholder="Requestor's name"
+                    placeholder="Nombre del requisitor"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className={styles.inputField}
@@ -268,27 +269,27 @@ export default function OrderForms() {
                   Supervisor:
                   <input
                     type="text"
-                    placeholder="Supervisor's name"
+                    placeholder="Nombre del supervisor"
                     value={supervisorName}
                     onChange={(e) => setSupervisorName(e.target.value)}
                     className={styles.inputField}
                   />
                 </label>
                 <label>
-                  Phone:
+                  Telefono:
                   <input
                     type="tel"
-                    placeholder="Phone number"
+                    placeholder="Numero"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className={styles.inputField}
                   />
                 </label>
                 <label>
-                  Equipment:
+                  Equipo:
                   <input
                     type="text"
-                    placeholder="Equipment or area"
+                    placeholder="Equipo"
                     value={equipment}
                     onChange={(e) => setEquipment(e.target.value)}
                     className={styles.inputField}
@@ -299,10 +300,10 @@ export default function OrderForms() {
 
             <div className={styles.modalButtons}>
               <button onClick={handleCloseModal} className={styles.cancelBtn}>
-                Cancel
+                Cancelar
               </button>
               <button onClick={handleSubmit} className={styles.confirmBtn}>
-                Submit Order
+                Enviar Orden
               </button>
             </div>
           </div>
