@@ -20,6 +20,7 @@ interface CustomItem {
 interface Props {
   product: Product | null;
   addCustomItem?: (item: CustomItem) => void;
+  onConfirmDesign?: (base64: string) => void; // <-- NUEVO
 }
 
 interface State {
@@ -171,13 +172,19 @@ class Editor extends Component<Props, State> {
                   variant="success"
                   style={{ width: '90%' }}
                   onClick={() => {
-                    const base64Image = canvasController?.getImageBase64("png", true);
+                    const base64Image = canvasController.getImageBase64("png", true);
+                    console.log(base64Image);
                     if (base64Image) {
                       localStorage.setItem("savedDesign", JSON.stringify({
                         image: base64Image,
                         productId: product.id,
                         color: currentColor
                       }));
+
+                      if (this.props.onConfirmDesign) {
+                        this.props.onConfirmDesign(base64Image);
+                      }
+
                       alert("Saved Design");
                     }
                   }}

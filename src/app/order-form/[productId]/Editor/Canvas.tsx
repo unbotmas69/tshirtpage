@@ -118,7 +118,7 @@ export default class Canvas extends Component<Props, State> {
         img,
         this.canvas.renderAll.bind(this.canvas)
       );
-    });
+    }, { crossOrigin: 'anonymous' });
   };
 
   setScreenResize = () => {
@@ -139,7 +139,7 @@ addImage = (url: string) => {
     this.canvas.add(img);
     this.canvas.setActiveObject(img);
     this.canvas.renderAll();
-  });
+  }, { crossOrigin: 'anonymous' });
 };
 
 
@@ -276,8 +276,11 @@ addText = (text: string, fontFamily: string, textColor: string) => {
       img.scaleToHeight(this.canvas.getHeight());
       img.scaleToWidth(this.canvas.getWidth());
       img.selectable = false;
-      this.canvas.setBackgroundImage(img, this.canvas.renderAll.bind(this.canvas));
-    });
+      this.canvas.setBackgroundImage(
+        img,
+        this.canvas.renderAll.bind(this.canvas)
+      );
+    }, { crossOrigin: 'anonymous' }); 
   };
 
   getImageBase64 = (

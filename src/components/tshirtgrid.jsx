@@ -17,8 +17,8 @@ export default function TShirtGrid() {
 
   return (
     <div className={styles.gridContainer}>
-      {products.map((shirt) => (
-        <Link key={shirt.id} href={`/order-form/${shirt.productId}`} className={styles.card}>
+      {products.map((shirt, i) => (
+        <Link key={i} href={`/order-form/${shirt.productId}`} className={styles.card}>
           <Image
             src={shirt.previewImage}
             alt={`T-shirt model ${shirt.id}`}

@@ -75,7 +75,8 @@ export default function OrderForms() {
     if (isModalOpen) {
       const savedDesign = localStorage.getItem("savedDesign");
       if (savedDesign) {
-        setCustomImage(savedDesign);
+        const parsed = JSON.parse(savedDesign);
+        setCustomImage(parsed.image);
       }
     }
   }, [isModalOpen]);
@@ -84,6 +85,10 @@ export default function OrderForms() {
     const updated = [...shirtDetails];
     updated[index][field] = value;
     setShirtDetails(updated);
+  };
+
+  const handleDesignConfirm = (base64Image: string) => {
+    setCustomImage(base64Image);
   };
 
   const handleDelete = (index: number) => {
@@ -96,6 +101,8 @@ export default function OrderForms() {
   };
 
   const handleSubmit = async () => {
+    const totalPrice = ((product?.price ?? 0) + customItemsTotal) * qty;
+
     const orderPayload = {
       name,
       supervisorName,
@@ -104,6 +111,7 @@ export default function OrderForms() {
       qty,
       productId,
       customImage,
+      total: totalPrice,
       personsData: shirtDetails.map(detail => ({
         name: detail.name,
         size: detail.size
@@ -111,9 +119,10 @@ export default function OrderForms() {
       status: "New"
     };
 
+    console.log(customImage)
+
     try {
       const response = await NewOrder(orderPayload);
-
       if (response && response.status === 201) {
         alert("Order successfully submitted!");
         setIsModalOpen(false);
@@ -145,7 +154,13 @@ export default function OrderForms() {
     <div>
       <Header />
 
-      {product && <Editor product={product} addCustomItem={addCustomItem} />}
+      {product && (
+        <Editor
+          product={product}
+          addCustomItem={addCustomItem}
+          onConfirmDesign={handleDesignConfirm} // <-- aquí
+        />
+      )}
 
       <div className={styles.detailsSection}>
         <h2>Detalles de la orden</h2>
@@ -160,7 +175,7 @@ export default function OrderForms() {
           />
         </label>
         <p>Precio Total: <strong>${totalPrice.toFixed(2)}</strong></p>
-
+        <button onClick={() => {console.log(customImage)}}>asdas</button>
         <div className={styles.buttonContainer}>
           <button className={styles.orderButton} onClick={handleOpenModal}>
             Confirmar orden
@@ -223,6 +238,7 @@ export default function OrderForms() {
           <div className={styles.modalContent}>
             <h2>Confirmar Orden</h2>
 
+            <p>Total a pagar: <strong>${totalPrice.toFixed(2)}</strong></p>
             <div className={styles.modalBody}>
               {customImage && (
                 <div className={styles.imageContainer}>
