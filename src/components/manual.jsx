@@ -5,17 +5,17 @@ import React from "react";
 
 export default function Manual() {
   const steps = [
-    { number: "01", text: "Find the product that suits your needs" },
-    { number: "02", text: "Select the product that will take you to the quote form" },
-    { number: "03", text: "Fill in all the fields of the form, don't forget to upload your logo in PNG format" },
-    { number: "04", text: "Check the preview of your order, and click on Submit" },
-    { number: "05", text: "You finish, we take care of the rest" },
+    { number: "01", text: "Encuentra el producto que se ajuste a tus necesidades" },
+    { number: "02", text: "Selecciona el producto para ir al formulario de cotización" },
+    { number: "03", text: "Llena todos los campos del formulario, no olvides subir tu logo en formato PNG" },
+    { number: "04", text: "Revisa la vista previa de tu pedido y haz clic en Enviar" },
+    { number: "05", text: "Tú terminas, nosotros nos encargamos del resto" },
   ];
 
   return (
     <div className={styles.container}>
       <div className={styles.left}>
-        <h1>HOW TO PLACE AN ORDER?</h1>
+        <h1>¿CÓMO HACER UN PEDIDO?</h1>
       </div>
       <div className={styles.right}>
         {steps.map((step, index) => (

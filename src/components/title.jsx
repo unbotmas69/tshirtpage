@@ -8,11 +8,9 @@ export default function Title() {
   return (
     <div className={styles.content}>
       <div className={styles.slogan}>
-        <h1>Bringing Your Designs to Life, </h1><br />
+        <h1>Dando vida a tus diseños, </h1><br />
         <h2>
-          One Shirt at a <span className={styles.inlineImage}>
-            <Image src="/img/T-SHIRT-t.png" alt="Logo T" width={80} height={80} />
-          </span>ime!
+          Una camiseta a la vez!
         </h2>
       </div>
     </div>

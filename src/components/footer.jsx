@@ -14,22 +14,22 @@ export default function Footer() {
         </div>
         {/* Horarios de Atención */}
         <div className={styles.hours}>
-          <h4>Business Hours</h4>
-          <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
-          <p>Sat: 10:00 AM - 4:00 PM</p>
-          <p>Sun: Closed</p>
+          <h4>Horarios de atencion</h4>
+          <p>Lun - Vie: 9:00 AM - 6:00 PM</p>
+          <p>Sab: 10:00 AM - 4:00 PM</p>
+          <p>Dom: Cerrado</p>
         </div>
 
         {/* Medios de Contacto */}
         <div className={styles.contact}>
-          <h4>Contact Us</h4>
+          <h4>Contacto</h4>
           <p>Email: contact@example.com</p>
           <p>Phone: +123 456 7890</p>
         </div>
 
         {/* Redes Sociales */}
         <div className={styles.social}>
-          <h4>Follow Us</h4>
+          <h4>Siguenos</h4>
           <div className={styles.socialIcons}>
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
               <Image src="/img/icons/face.png" alt="Facebook" width={30} height={30} />
@@ -44,7 +44,7 @@ export default function Footer() {
       {/* Información de la Página - Link a la web */}
       <div className={styles.createdBy}>
         <p>
-          Website created by{" "}
+          Sistema hecho por {" "}
           <a href="https://www.maypretec.com" target="_blank" rel="noopener noreferrer">
             Maypretec
           </a>
