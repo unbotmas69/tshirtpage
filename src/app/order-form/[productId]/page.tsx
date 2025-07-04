@@ -178,7 +178,7 @@ export default function OrderForms() {
         <button onClick={() => {console.log(customImage)}}>asdas</button>
         <div className={styles.buttonContainer}>
           <button className={styles.orderButton} onClick={handleOpenModal}>
-            Confirmar orden
+            Confirmar su orden
           </button>
         </div>
 
