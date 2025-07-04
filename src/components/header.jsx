@@ -23,13 +23,13 @@ export default function Header() {
 
       <nav className={`${styles.buttons} ${menuOpen ? styles.active : ""}`}>
         <Link href="/" onClick={() => setMenuOpen(false)}>
-          <button className={styles.button}>Home</button>
+          <button className={styles.button}>Inicio</button>
         </Link>
         <Link href="#t-shirts" onClick={() => setMenuOpen(false)}>
           <button className={styles.button}>T-Shirts</button>
         </Link>
         <Link href="#contact" onClick={() => setMenuOpen(false)}>
-          <button className={styles.button}>Contact</button>
+          <button className={styles.button}>Contacto</button>
         </Link>
       </nav>
     </header>

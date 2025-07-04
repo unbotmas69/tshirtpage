@@ -22,19 +22,19 @@ export default function ContactForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted", formData);
+    console.log("Formulario enviado", formData);
   };
 
   return (
     <div className={styles.content} id="contact">
-        <div className={styles.title}>
-            <h1>Contact Form</h1><br />
-            <h3>If you need direct contact, do not hesitate to fill out the form,</h3><br />
-            <h3>we will answer you as soon as possible</h3>
-        </div>
+      <div className={styles.title}>
+        <h1>Formulario de Contacto</h1><br />
+        <h3>Si necesitas contactarnos directamente, no dudes en llenar el formulario,</h3><br />
+        <h3>te responderemos lo antes posible</h3>
+      </div>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.inputGroup}>
-          <label htmlFor="firstName">First Name</label>
+          <label htmlFor="firstName">Nombre</label>
           <input
             type="text"
             id="firstName"
@@ -46,7 +46,7 @@ export default function ContactForm() {
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="lastName">Last Name</label>
+          <label htmlFor="lastName">Apellido</label>
           <input
             type="text"
             id="lastName"
@@ -58,7 +58,7 @@ export default function ContactForm() {
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Correo Electrónico</label>
           <input
             type="email"
             id="email"
@@ -70,7 +70,7 @@ export default function ContactForm() {
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="phone">Phone</label>
+          <label htmlFor="phone">Teléfono</label>
           <input
             type="tel"
             id="phone"
@@ -82,7 +82,7 @@ export default function ContactForm() {
         </div>
 
         <div className={styles.inputGroup}>
-          <label htmlFor="message">Message</label>
+          <label htmlFor="message">Mensaje</label>
           <textarea
             id="message"
             name="message"
@@ -93,7 +93,7 @@ export default function ContactForm() {
         </div>
 
         <button type="submit" className={styles.submitButton}>
-          Submit
+          Enviar
         </button>
       </form>
     </div>

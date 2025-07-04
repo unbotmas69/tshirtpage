@@ -15,6 +15,12 @@
 	box-shadow: none !important;
 } */
 
+@media screen and (max-width: 768px) {
+  .canvas-container {
+    margin-left: -20% !important;
+  }
+}
+
 @media screen and (max-width: 450px) {
   .canvas-container {
     margin-left: -10% !important;

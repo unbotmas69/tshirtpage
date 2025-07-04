@@ -26,7 +26,7 @@ export default function TShirtGrid() {
             height={200}
             className={styles.image}
           />
-          <p>Customize this model</p>
+          <p>Personaliza este modelo</p>
         </Link>
       ))}
     </div>
