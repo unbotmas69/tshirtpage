@@ -181,7 +181,6 @@ export default function OrderForms() {
             Confirmar su orden
           </button>
         </div>
-
         {qty >= 1 && (
           <table className={styles.detailsTable}>
             <thead>
