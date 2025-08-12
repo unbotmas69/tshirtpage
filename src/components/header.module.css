@@ -49,16 +49,17 @@
 }
 
 /* ------- RESPONSIVE -------- */
-@media (max-width: 768px) {
+@media (max-width: 920px) {
   .header {
     flex-direction: column;
-    height: auto;
+    height: 12vh;
     padding: 10px;
   }
 
-  .logo {
+  .logo img {
     justify-content: center;
-    width: 15vh;
+    width: 12vh;
+    height: 10vh;
   }
 
   .menuToggle {

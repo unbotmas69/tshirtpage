@@ -325,7 +325,6 @@ export default function OrderForms() {
         </div>
       )}
 
-      <Footer />
     </div>
   );
 }
