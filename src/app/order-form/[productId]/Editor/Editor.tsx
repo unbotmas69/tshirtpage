@@ -115,7 +115,7 @@ getColorsAvailable() {
   };
 
   render() {
-    const { canvasController, textInput, textFont, currentColor, editing, selectedObjects } = this.state;
+    const { canvasController, textInput, textFont, currentColor, textColor, editing, selectedObjects } = this.state;
     const { product } = this.props;
     if (!product) return null;
 
@@ -126,6 +126,15 @@ getColorsAvailable() {
         <div className="py-5">
           <div className="container py-5 editor-container">
             <Row>
+
+                  <Card className="shadow-sm mb-3">
+                  <Card.Body>
+                    <Card.Title>Informacion del producto</Card.Title>
+                    <p><strong>Titulo:</strong> {product.title}</p>
+                    <p><strong>Precio:</strong> ${product.price}</p>
+                  </Card.Body>
+                </Card>
+
               <Col md={8} className="canvas-column">
                 <Canvas
                   controller={this.initCanvasController}
@@ -176,14 +185,27 @@ getColorsAvailable() {
                 </div>
               </Col>
 
+            <Card className="shadow-sm mb-3">
+                <Card.Body>
+                  <Card.Title>Color de playera</Card.Title>
+                  {colorsAvailable.length > 0 ? (
+                    <Form.Select
+                      onChange={(e) => this.handleShirtColorChange(e.target.value)}
+                      value={currentColor}
+                    >
+                      {colorsAvailable.map((c, idx) => (
+                        <option key={idx} value={c.color}>
+                          {c.color.charAt(0).toUpperCase() + c.color.slice(1)}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  ) : (
+                    <p>Cargando colores...</p>
+                  )}
+                </Card.Body>
+              </Card>
+              
               <Col md={4}>
-                <Card className="shadow-sm mb-3">
-                  <Card.Body>
-                    <Card.Title>Informacion del producto</Card.Title>
-                    <p><strong>Titulo:</strong> {product.title}</p>
-                    <p><strong>Precio:</strong> ${product.price}</p>
-                  </Card.Body>
-                </Card>
 
                 <Card className="shadow-sm mb-3">
                   <Card.Body>
@@ -219,44 +241,18 @@ getColorsAvailable() {
                       disabled={!textInput.trim()}
                       onClick={() => {
                         if (!editing) {
-                          canvasController.addText(textInput, textFont, this.state.textColor || 'black'); 
-                          this.notifyAddTextItem();
+                          canvasController.addText(textInput, textFont, textColor);
+                          this.notifyAddTextItem(); // <-- notificamos aquí
                         } else {
-                          canvasController.updateText(
-                            selectedObjects[0] as fabric.Textbox,
-                            textInput,
-                            textFont,
-                            this.state.textColor || 'black'
-                          );
+                          canvasController.updateText(selectedObjects[0] as fabric.Textbox, textInput, textFont, textColor);
                         }
                         this.setState({ textInput: "", editing: false });
                       }}
                     >
                       {editing ? "Actualizar texto" : "Agregar"}
                     </Button>
-                    
                   </Card.Body>
                 </Card>
-
-                <Card className="shadow-sm mb-3">
-                <Card.Body>
-                  <Card.Title>Color de playera</Card.Title>
-                  {colorsAvailable.length > 0 ? (
-                    <Form.Select
-                      onChange={(e) => this.handleShirtColorChange(e.target.value)}
-                      value={currentColor}
-                    >
-                      {colorsAvailable.map((c, idx) => (
-                        <option key={idx} value={c.color}>
-                          {c.color.charAt(0).toUpperCase() + c.color.slice(1)}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  ) : (
-                    <p>Cargando colores...</p>
-                  )}
-                </Card.Body>
-              </Card>
 
                 <Card className="shadow-sm">
                   <Card.Body>

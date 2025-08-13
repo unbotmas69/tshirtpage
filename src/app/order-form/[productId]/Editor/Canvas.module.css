@@ -1,0 +1,10 @@
+.canvasContainer {
+  border: 2px solid #b2b2b2;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .canvasContainer {
+    max-width: 40vh;
+  }
+}

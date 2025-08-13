@@ -223,7 +223,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 50vh;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.6);
     overflow-y: auto; /* permite scroll en toda la pantalla si el contenido lo requiere */
@@ -232,7 +232,7 @@
 
   .modalContent {
     width: 95%;
-    max-height: 95vh;
+    max-height: 90vh;
     margin: 2rem auto;
     background: white;
     border-radius: 8px;
@@ -244,16 +244,16 @@
   }
 
   .modalBody {
-    overflow-x: auto;
+    max-width: 50vh;
   }
 
   .imageContainer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
   }
 
   .imageContainer img {
-    width: 100%;
+    width: 70%;
     height: auto;
   }
 

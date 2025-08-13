@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { fabric } from "fabric";
 import { saveAs } from "file-saver";
+import styles from "./Canvas.module.css";
 
 export interface CanvasController {
   canvas: fabric.Canvas;
@@ -306,6 +307,6 @@ addText = (text: string, fontFamily: string, textColor: string) => {
   };
 
   render() {
-    return <canvas id="c" style={{ border: "2px solid #b2b2b2" }} />;
+    return <canvas id="c" className={styles.canvasContainer} />;
   }
 }
