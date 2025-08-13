@@ -16,8 +16,8 @@ export interface Product {
   price: number;
   colors: {
     color: string;
-    imgFront: string;
-    imgBack: string;
+    imgF: string;
+    imgB: string;
   }[];
 }
 
@@ -51,6 +51,7 @@ export default function OrderForms() {
     async function fetchProductData() {
       try {
         const res = await ProductsService.ProductsById(productId);
+        console.log("Producto cargado:", res);
         setProduct(res);
       } catch (error) {
         console.error("Error loading product data:", error);
@@ -175,7 +176,6 @@ export default function OrderForms() {
           />
         </label>
         <p>Precio Total: <strong>${totalPrice.toFixed(2)}</strong></p>
-        <button onClick={() => {console.log(customImage)}}>asdas</button>
         <div className={styles.buttonContainer}>
           <button className={styles.orderButton} onClick={handleOpenModal}>
             Confirmar su orden

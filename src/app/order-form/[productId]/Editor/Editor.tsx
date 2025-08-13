@@ -1,12 +1,5 @@
 import React, { Component, ChangeEvent } from "react";
-import {
-  Col,
-  Row,
-  Button,
-  FormControl,
-  Card,
-  Form
-} from "react-bootstrap";
+import { Col, Row, Button, FormControl, Card, Form } from "react-bootstrap";
 import Canvas, { CanvasController } from "./Canvas";
 import ImageUploadModal from "../Modals/ImageUploadModal";
 import { fabric } from "fabric";
@@ -20,7 +13,7 @@ interface CustomItem {
 interface Props {
   product: Product | null;
   addCustomItem?: (item: CustomItem) => void;
-  onConfirmDesign?: (base64: string) => void; // <-- NUEVO
+  onConfirmDesign?: (base64: string) => void;
 }
 
 interface State {
@@ -30,52 +23,43 @@ interface State {
   textFont: string;
   editing: boolean;
   currentColor: string;
+  textColor: string;
   selectedObjects: fabric.Object[];
 }
 
 class Editor extends Component<Props, State> {
-  state = {
+  state: State = {
     canvasController: {} as CanvasController,
     editorReady: false,
     textInput: "",
     textFont: "Open Sans",
     editing: false,
     currentColor: "",
-    selectedObjects: [] as fabric.Object[],
+    textColor: "",
+    selectedObjects: [],
   };
 
-  // Transformamos product.colors (objeto) a array usable
-  getColorsAvailable() {
-    const { product } = this.props;
-    if (!product || !product.colors) return [];
-    return Object.entries(product.colors).map(([color, imgs]) => ({
-      color,
-      imgFront: imgs.imgFront,
-      imgBack: imgs.imgBack,
-    }));
-  }
-
-  handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === "textInput") {
-      this.setState({ textInput: value });
-    }
-  };
+  // Devuelve el array de colores del producto
+getColorsAvailable() {
+  const { product } = this.props;
+  if (!product || !product.colors) return [];
+  return Object.entries(product.colors).map(([color, imgs]) => ({
+    color,
+    imgFront: imgs.imgF,
+    imgBack: imgs.imgB,
+  }));
+}
 
   initCanvasController = (controller: CanvasController) => {
     controller.canvas.on("mouse:down", () => {
       const selected = controller.canvas.getActiveObjects();
       if (selected.length > 0) {
-        const canEdit =
-          selected.length === 1 && selected[0].isType("textbox");
+        const canEdit = selected.length === 1 && selected[0].isType("textbox");
         this.setState({
           selectedObjects: selected,
           editing: canEdit,
           textInput: canEdit ? (selected[0] as any).text : "",
           textFont: canEdit ? (selected[0] as any).fontFamily : "Open Sans",
-          currentColor: canEdit
-            ? (selected[0] as any).fill
-            : this.state.currentColor,
         });
       } else {
         this.setState({
@@ -83,55 +67,50 @@ class Editor extends Component<Props, State> {
           editing: false,
           textInput: "",
           textFont: "Open Sans",
-          // No resetear color para que no desaparezca la selección
         });
       }
     });
 
-    this.setState({ canvasController: controller, editorReady: true });
+    this.setState({ canvasController: controller, editorReady: true }, () => {
+      // Si ya hay producto cargado, inicializar color por defecto
+      const colorsAvailable = this.getColorsAvailable();
+      if (colorsAvailable.length > 0) {
+        this.handleShirtColorChange(colorsAvailable[0].color);
+      }
+    });
   };
 
-  componentDidUpdate(prevProps: Props) {
-    const { product } = this.props;
-
-    if (product && product !== prevProps.product && this.state.canvasController) {
-      const colorsAvailable = this.getColorsAvailable();
-      if (colorsAvailable.length === 0) return;
-
-      // Default: primer color disponible
-      const defaultColor = colorsAvailable[0];
-
-      this.state.canvasController.changeBackground(defaultColor.imgFront);
-      this.setState({ currentColor: defaultColor.color });
-    }
-  }
-
-  handleColorChange = (color: string) => {
-    this.setState({ currentColor: color });
+  handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === "textInput") this.setState({ textInput: value });
   };
 
   handleShirtColorChange = (color: string) => {
+    const { canvasController } = this.state;
+    if (!canvasController || !canvasController.changeBackground) return;
+
     const colorsAvailable = this.getColorsAvailable();
-    const selectedColor = colorsAvailable.find(
-      (item) => item.color === color
-    );
+    const selectedColor = colorsAvailable.find((c) => c.color === color);
+
     if (selectedColor) {
-      this.state.canvasController.changeBackground(selectedColor.imgFront);
+      canvasController.changeBackground(selectedColor.imgFront);
       this.setState({ currentColor: selectedColor.color });
     }
   };
 
-  // Función para notificar al padre cuando se agrega un texto personalizado
+  handleColorTextChange = (colorT: string) => {
+    this.setState({ textColor: colorT });
+  };
+
   notifyAddTextItem = () => {
     if (this.props.addCustomItem) {
-      this.props.addCustomItem({ type: "text", price: 20 });
+      this.props.addCustomItem({ type: "text", price: 1 });
     }
   };
 
-  // Función para notificar al padre cuando se agrega una imagen personalizada
   notifyAddImageItem = () => {
     if (this.props.addCustomItem) {
-      this.props.addCustomItem({ type: "image", price: 50 });
+      this.props.addCustomItem({ type: "image", price: 2 });
     }
   };
 
@@ -185,7 +164,7 @@ class Editor extends Component<Props, State> {
                         this.props.onConfirmDesign(base64Image);
                       }
 
-                      alert("Saved Design");
+                      alert("Guardado, proceda al pedido");
                     }
                   }}
                 >
@@ -218,18 +197,18 @@ class Editor extends Component<Props, State> {
                       className="mb-3"
                     />
                     <div className="color-buttons d-flex flex-wrap gap-2 mb-3">
-                      {['black', 'white', 'red', 'blue', 'yellow', 'green'].map(color => (
+                      {['black', 'white', 'red', 'blue', 'yellow', 'green'].map(colorT => (
                         <Button
-                          key={color}
+                          key={colorT}
                           variant="outline-dark"
                           style={{
-                            backgroundColor: color,
-                            color: color === 'yellow' || color === 'white' ? 'black' : 'white',
+                            backgroundColor: colorT,
+                            color: colorT === 'yellow' || colorT === 'white' ? 'black' : 'white',
                             minWidth: 60
                           }}
-                          onClick={() => this.handleColorChange(color)}
+                          onClick={() => this.handleColorTextChange(colorT)}
                         >
-                          {color.charAt(0).toUpperCase() + color.slice(1)}
+                          {colorT.charAt(0).toUpperCase() + colorT.slice(1)}
                         </Button>
                       ))}
                     </div>
@@ -240,41 +219,49 @@ class Editor extends Component<Props, State> {
                       disabled={!textInput.trim()}
                       onClick={() => {
                         if (!editing) {
-                          canvasController.addText(textInput, textFont, currentColor);
-                          this.notifyAddTextItem(); // <-- notificamos aquí
+                          canvasController.addText(textInput, textFont, this.state.textColor || 'black'); 
+                          this.notifyAddTextItem();
                         } else {
-                          canvasController.updateText(selectedObjects[0] as fabric.Textbox, textInput, textFont, currentColor);
+                          canvasController.updateText(
+                            selectedObjects[0] as fabric.Textbox,
+                            textInput,
+                            textFont,
+                            this.state.textColor || 'black'
+                          );
                         }
                         this.setState({ textInput: "", editing: false });
                       }}
                     >
                       {editing ? "Actualizar texto" : "Agregar"}
                     </Button>
+                    
                   </Card.Body>
                 </Card>
 
                 <Card className="shadow-sm mb-3">
-                  <Card.Body>
-                    <Card.Title className="mb-3">Color de playera</Card.Title>
+                <Card.Body>
+                  <Card.Title>Color de playera</Card.Title>
+                  {colorsAvailable.length > 0 ? (
                     <Form.Select
                       onChange={(e) => this.handleShirtColorChange(e.target.value)}
                       value={currentColor}
                     >
-                      {colorsAvailable.map((colorOption, index) => (
-                        <option key={index} value={colorOption.color}>
-                          {colorOption.color.charAt(0).toUpperCase() + colorOption.color.slice(1)}
+                      {colorsAvailable.map((c, idx) => (
+                        <option key={idx} value={c.color}>
+                          {c.color.charAt(0).toUpperCase() + c.color.slice(1)}
                         </option>
                       ))}
                     </Form.Select>
-                  </Card.Body>
-                </Card>
+                  ) : (
+                    <p>Cargando colores...</p>
+                  )}
+                </Card.Body>
+              </Card>
 
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <Card.Title className="mb-3">Agregar logo</Card.Title>
-                    <ImageUploadModal
-                      canvas={this.state.canvasController.canvas}
-                    />
+                    <Card.Title>Agregar logo</Card.Title>
+                    <ImageUploadModal canvas={this.state.canvasController.canvas} />
                   </Card.Body>
                 </Card>
               </Col>

@@ -22,9 +22,25 @@ function ProductsById(productId) {
     });
 }
 
+function ProductImageProxy(url) {
+    return request({
+        url: API.PRODUCTS.IMG + "?url=" + encodeURIComponent(url),
+        method: requestMethods.GET,
+        responseType: 'blob'
+    })
+    .then(res => {
+        return URL.createObjectURL(res);
+    })
+    .catch(err => {
+        console.error("Error en ProductsService.ProductImageProxy:", err);
+        return null;
+    });
+}
+
 const ProductsService = {
     Products,
-    ProductsById
+    ProductsById,
+    ProductImageProxy
 };
 
 export default ProductsService;

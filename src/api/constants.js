@@ -19,6 +19,7 @@ export const API = {
     },
         PRODUCTS: {
         ALL: '/api/products',
-        ID: '/api/products/:productId'
+        ID: '/api/products/:productId',
+        IMG: '/api/imageProxy'
     }
 };
