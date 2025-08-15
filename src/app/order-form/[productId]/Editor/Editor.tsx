@@ -13,11 +13,12 @@ interface CustomItem {
 interface Props {
   product: Product | null;
   addCustomItem?: (item: CustomItem) => void;
-  onConfirmDesign?: (base64: string) => void;
+  onConfirmDesign?: (images: { front: string; back: string }) => void;
 }
 
 interface State {
-  canvasController: CanvasController;
+  canvasControllerFront: CanvasController;
+  canvasControllerBack: CanvasController;
   editorReady: boolean;
   textInput: string;
   textFont: string;
@@ -29,7 +30,8 @@ interface State {
 
 class Editor extends Component<Props, State> {
   state: State = {
-    canvasController: {} as CanvasController,
+    canvasControllerFront: {} as CanvasController,
+    canvasControllerBack: {} as CanvasController,
     editorReady: false,
     textInput: "",
     textFont: "Open Sans",
@@ -39,8 +41,7 @@ class Editor extends Component<Props, State> {
     selectedObjects: [],
   };
 
-  // Devuelve el array de colores del producto
-getColorsAvailable() {
+  getColorsAvailable() {
   const { product } = this.props;
   if (!product || !product.colors) return [];
   return Object.entries(product.colors).map(([color, imgs]) => ({
@@ -50,29 +51,17 @@ getColorsAvailable() {
   }));
 }
 
-  initCanvasController = (controller: CanvasController) => {
-    controller.canvas.on("mouse:down", () => {
-      const selected = controller.canvas.getActiveObjects();
-      if (selected.length > 0) {
-        const canEdit = selected.length === 1 && selected[0].isType("textbox");
-        this.setState({
-          selectedObjects: selected,
-          editing: canEdit,
-          textInput: canEdit ? (selected[0] as any).text : "",
-          textFont: canEdit ? (selected[0] as any).fontFamily : "Open Sans",
-        });
-      } else {
-        this.setState({
-          selectedObjects: [],
-          editing: false,
-          textInput: "",
-          textFont: "Open Sans",
-        });
+  initCanvasControllerFront = (controller: CanvasController) => {
+    this.setState({ canvasControllerFront: controller, editorReady: true }, () => {
+      const colorsAvailable = this.getColorsAvailable();
+      if (colorsAvailable.length > 0) {
+        this.handleShirtColorChange(colorsAvailable[0].color);
       }
     });
+  };
 
-    this.setState({ canvasController: controller, editorReady: true }, () => {
-      // Si ya hay producto cargado, inicializar color por defecto
+  initCanvasControllerBack = (controller: CanvasController) => {
+    this.setState({ canvasControllerBack: controller, editorReady: true }, () => {
       const colorsAvailable = this.getColorsAvailable();
       if (colorsAvailable.length > 0) {
         this.handleShirtColorChange(colorsAvailable[0].color);
@@ -86,14 +75,12 @@ getColorsAvailable() {
   };
 
   handleShirtColorChange = (color: string) => {
-    const { canvasController } = this.state;
-    if (!canvasController || !canvasController.changeBackground) return;
-
-    const colorsAvailable = this.getColorsAvailable();
-    const selectedColor = colorsAvailable.find((c) => c.color === color);
+    const { canvasControllerFront, canvasControllerBack } = this.state;
+    const selectedColor = this.getColorsAvailable().find((c) => c.color === color);
 
     if (selectedColor) {
-      canvasController.changeBackground(selectedColor.imgFront);
+      canvasControllerFront.changeBackground(selectedColor.imgFront);
+      canvasControllerBack.changeBackground(selectedColor.imgBack);
       this.setState({ currentColor: selectedColor.color });
     }
   };
@@ -103,19 +90,144 @@ getColorsAvailable() {
   };
 
   notifyAddTextItem = () => {
-    if (this.props.addCustomItem) {
-      this.props.addCustomItem({ type: "text", price: 1 });
-    }
+    this.props.addCustomItem?.({ type: "text", price: 1 });
   };
 
   notifyAddImageItem = () => {
-    if (this.props.addCustomItem) {
-      this.props.addCustomItem({ type: "image", price: 2 });
-    }
+    this.props.addCustomItem?.({ type: "image", price: 2 });
   };
 
+  renderCanvasSection = (title: string, controller: CanvasController) => {
+    const { textInput, textFont, textColor, editing, selectedObjects } = this.state;
+
+    return (
+      <Row className="mb-5">
+        <Col md={8}>
+          <div className="text-center mb-2">
+            <p style={{ color: "black", margin: 0 }}>
+              <strong>{title}</strong>
+            </p>
+          </div>
+
+          <Canvas
+            controller={title.includes("frontal") ? this.initCanvasControllerFront : this.initCanvasControllerBack}
+            product={this.props.product!}
+          />
+
+          <div className="d-flex justify-content-between m-3">
+            <Button
+              variant="danger"
+              style={{ width: "90%" }}
+              disabled={selectedObjects.length === 0}
+              onClick={() => {
+                controller.deleteObjects(selectedObjects);
+                this.setState({ selectedObjects: [] });
+              }}
+            >
+              <i className="fas fa-trash-alt me-2"></i>
+              Borrar elemento seleccionado
+            </Button>
+          </div>
+        </Col>
+
+        <Col md={4}>
+          <Card className="shadow-sm mb-3">
+            <Card.Body>
+              <Card.Title className="mb-3">Agregar texto</Card.Title>
+              <FormControl
+                placeholder={editing ? "Editar" : "Agregar"}
+                name="textInput"
+                onChange={this.handleOnChange}
+                value={textInput}
+                type="text"
+                className="mb-3"
+              />
+              <div className="color-buttons d-flex flex-wrap gap-2 mb-3">
+                {["black", "white", "red", "blue", "yellow", "green"].map((colorT) => (
+                  <Button
+                    key={colorT}
+                    variant="outline-dark"
+                    style={{
+                      backgroundColor: colorT,
+                      color: colorT === "yellow" || colorT === "white" ? "black" : "white",
+                      minWidth: 60,
+                    }}
+                    onClick={() => this.handleColorTextChange(colorT)}
+                  >
+                    {colorT.charAt(0).toUpperCase() + colorT.slice(1)}
+                  </Button>
+                ))}
+              </div>
+
+              <Button
+                className="w-100 mt-3"
+                variant="primary"
+                disabled={!textInput.trim()}
+                onClick={() => {
+                  if (!editing) {
+                    controller.addText(textInput, textFont, textColor);
+                    this.notifyAddTextItem();
+                  } else {
+                    controller.updateText(selectedObjects[0] as fabric.Textbox, textInput, textFont, textColor);
+                  }
+                  this.setState({ textInput: "", editing: false });
+                }}
+              >
+                {editing ? "Actualizar texto" : "Agregar"}
+              </Button>
+            </Card.Body>
+          </Card>
+
+          <Card className="shadow-sm">
+            <Card.Body>
+              <Card.Title>Agregar logo</Card.Title>
+              <ImageUploadModal canvas={controller.canvas} />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    );
+  };
+
+handleConfirm = async () => {
+  const { canvasControllerFront, canvasControllerBack } = this.state;
+
+  if (!canvasControllerFront || !canvasControllerBack) {
+    alert("El editor aún no está listo.");
+    return;
+  }
+
+  // Renderizar canvas antes de obtener imágenes
+  canvasControllerFront.canvas.discardActiveObject();
+  canvasControllerFront.canvas.renderAll();
+  canvasControllerBack.canvas.discardActiveObject();
+  canvasControllerBack.canvas.renderAll();
+
+  try {
+    const frontBase64 = await canvasControllerFront.getImageBase64("png", true);
+    const backBase64 = await canvasControllerBack.getImageBase64("png", true);
+
+    if (!frontBase64 || !backBase64) {
+      alert("Ocurrió un error al generar las imágenes.");
+      return;
+    }
+
+    // Enviar imágenes como strings
+    this.props.onConfirmDesign?.({
+      front: frontBase64,
+      back: backBase64,
+    });
+
+    alert("Guardado, proceda al pedido");
+  } catch (error) {
+    console.error(error);
+    alert("Error al generar las imágenes. Intente nuevamente.");
+  }
+};
+
+
   render() {
-    const { canvasController, textInput, textFont, currentColor, textColor, editing, selectedObjects } = this.state;
+    const { currentColor, canvasControllerFront, canvasControllerBack } = this.state;
     const { product } = this.props;
     if (!product) return null;
 
@@ -123,145 +235,47 @@ getColorsAvailable() {
 
     return (
       <div className="py-5">
-        <div className="py-5">
-          <div className="container py-5 editor-container">
-            <Row>
+        <div className="container py-5 editor-container">
+          <Card className="shadow-sm mb-3">
+            <Card.Body>
+              <Card.Title>Información del producto</Card.Title>
+              <p><strong>Título:</strong> {product.title}</p>
+              <p><strong>Precio:</strong> ${product.price}</p>
+            </Card.Body>
+          </Card>
 
-                  <Card className="shadow-sm mb-3">
-                  <Card.Body>
-                    <Card.Title>Informacion del producto</Card.Title>
-                    <p><strong>Titulo:</strong> {product.title}</p>
-                    <p><strong>Precio:</strong> ${product.price}</p>
-                  </Card.Body>
-                </Card>
-
-              <Col md={8} className="canvas-column">
-                <Canvas
-                  controller={this.initCanvasController}
-                  product={product}
-                />
-                <div className="d-flex justify-content-between mt-3">
-                  <div className="col-6 d-flex justify-content-center">
-                    <Button
-                      variant="danger"
-                      style={{ width: '90%' }}
-                      disabled={selectedObjects.length === 0}
-                      onClick={() => {
-                        canvasController.deleteObjects(selectedObjects);
-                        this.setState({ selectedObjects: [] });
-                      }}
-                    >
-                      <i className="fas fa-trash-alt me-2"></i>
-                      Borrar elemento seleccionado
-                    </Button>
-                  </div>
-                  <div className="col-6 d-flex justify-content-center">
-                <Button
-                  variant="success"
-                  style={{ width: '90%' }}
-                  onClick={() => {
-                    const base64Image = canvasController.getImageBase64("png", true);
-                    console.log(base64Image);
-                    if (base64Image) {
-                      localStorage.setItem("savedDesign", JSON.stringify({
-                        image: base64Image,
-                        productId: product.id,
-                        color: currentColor
-                      }));
-
-                      if (this.props.onConfirmDesign) {
-                        this.props.onConfirmDesign(base64Image);
-                      }
-
-                      alert("Guardado, proceda al pedido");
-                    }
-                  }}
+          <Card className="shadow-sm mb-3">
+            <Card.Body>
+              <Card.Title>Color de playera</Card.Title>
+              {colorsAvailable.length > 0 ? (
+                <Form.Select
+                  onChange={(e) => this.handleShirtColorChange(e.target.value)}
+                  value={currentColor}
                 >
-                  <i className="fas fa-save me-2"></i>
-                  Confirmar Playera
-                </Button>
+                  {colorsAvailable.map((c, idx) => (
+                    <option key={idx} value={c.color}>
+                      {c.color.charAt(0).toUpperCase() + c.color.slice(1)}
+                    </option>
+                  ))}
+                </Form.Select>
+              ) : (
+                <p>Cargando colores...</p>
+              )}
+            </Card.Body>
+          </Card>
 
-                  </div>
-                </div>
-              </Col>
+          {this.renderCanvasSection("Diseño frontal", canvasControllerFront)}
+          {this.renderCanvasSection("Diseño trasero", canvasControllerBack)}
 
-            <Card className="shadow-sm mb-3">
-                <Card.Body>
-                  <Card.Title>Color de playera</Card.Title>
-                  {colorsAvailable.length > 0 ? (
-                    <Form.Select
-                      onChange={(e) => this.handleShirtColorChange(e.target.value)}
-                      value={currentColor}
-                    >
-                      {colorsAvailable.map((c, idx) => (
-                        <option key={idx} value={c.color}>
-                          {c.color.charAt(0).toUpperCase() + c.color.slice(1)}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  ) : (
-                    <p>Cargando colores...</p>
-                  )}
-                </Card.Body>
-              </Card>
-              
-              <Col md={4}>
-
-                <Card className="shadow-sm mb-3">
-                  <Card.Body>
-                    <Card.Title className="mb-3">Agregar texto</Card.Title>
-                    <FormControl
-                      placeholder={editing ? "Editar" : "Agregar"}
-                      name="textInput"
-                      onChange={this.handleOnChange}
-                      value={textInput}
-                      type="text"
-                      className="mb-3"
-                    />
-                    <div className="color-buttons d-flex flex-wrap gap-2 mb-3">
-                      {['black', 'white', 'red', 'blue', 'yellow', 'green'].map(colorT => (
-                        <Button
-                          key={colorT}
-                          variant="outline-dark"
-                          style={{
-                            backgroundColor: colorT,
-                            color: colorT === 'yellow' || colorT === 'white' ? 'black' : 'white',
-                            minWidth: 60
-                          }}
-                          onClick={() => this.handleColorTextChange(colorT)}
-                        >
-                          {colorT.charAt(0).toUpperCase() + colorT.slice(1)}
-                        </Button>
-                      ))}
-                    </div>
-
-                    <Button
-                      className="w-100 mt-3"
-                      variant="primary"
-                      disabled={!textInput.trim()}
-                      onClick={() => {
-                        if (!editing) {
-                          canvasController.addText(textInput, textFont, textColor);
-                          this.notifyAddTextItem(); // <-- notificamos aquí
-                        } else {
-                          canvasController.updateText(selectedObjects[0] as fabric.Textbox, textInput, textFont, textColor);
-                        }
-                        this.setState({ textInput: "", editing: false });
-                      }}
-                    >
-                      {editing ? "Actualizar texto" : "Agregar"}
-                    </Button>
-                  </Card.Body>
-                </Card>
-
-                <Card className="shadow-sm">
-                  <Card.Body>
-                    <Card.Title>Agregar logo</Card.Title>
-                    <ImageUploadModal canvas={this.state.canvasController.canvas} />
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
+          <div className="d-flex justify-content-between m-3">
+            <Button
+              variant="success"
+              style={{ width: "90%" }}
+              onClick={this.handleConfirm}
+            >
+              <i className="fas fa-save me-2"></i>
+              Confirmar Playera
+            </Button>
           </div>
         </div>
       </div>

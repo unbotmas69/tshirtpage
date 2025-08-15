@@ -40,8 +40,8 @@ export default function OrderForms() {
   const [qty, setQuantity] = useState(1);
   const [shirtDetails, setShirtDetails] = useState<ShirtDetail[]>([{ name: "", size: "" }]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [customImage, setCustomImage] = useState<string | null>(null);
-
+  const [customImageF, setCustomImageF] = useState<string | null>(null);
+  const [customImageB, setCustomImageB] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [supervisorName, setSupervisorName] = useState("");
   const [phone, setPhone] = useState("");
@@ -72,15 +72,6 @@ export default function OrderForms() {
     });
   }, [qty]);
 
-  useEffect(() => {
-    if (isModalOpen) {
-      const savedDesign = localStorage.getItem("savedDesign");
-      if (savedDesign) {
-        const parsed = JSON.parse(savedDesign);
-        setCustomImage(parsed.image);
-      }
-    }
-  }, [isModalOpen]);
 
   const handleDetailChange = (index: number, field: "name" | "size", value: string) => {
     const updated = [...shirtDetails];
@@ -88,9 +79,11 @@ export default function OrderForms() {
     setShirtDetails(updated);
   };
 
-  const handleDesignConfirm = (base64Image: string) => {
-    setCustomImage(base64Image);
-  };
+  const handleDesignConfirm = (images: { front: string; back: string }) => {
+   console.log("Imágenes recibidas del editor:", images);
+    setCustomImageF(images.front);
+    setCustomImageB(images.back);
+};
 
   const handleDelete = (index: number) => {
     setShirtDetails((prevDetails) => {
@@ -102,6 +95,11 @@ export default function OrderForms() {
   };
 
   const handleSubmit = async () => {
+    if (!customImageF || !customImageB) {
+  alert("Debe confirmar el diseño de la playera antes de enviar la orden.");
+  return;
+}
+
     const totalPrice = ((product?.price ?? 0) + customItemsTotal) * qty;
 
     const orderPayload = {
@@ -111,7 +109,8 @@ export default function OrderForms() {
       equipment,
       qty,
       productId,
-      customImage,
+      customImageF,
+      customImageB,
       total: totalPrice,
       personsData: shirtDetails.map(detail => ({
         name: detail.name,
@@ -119,8 +118,6 @@ export default function OrderForms() {
       })),
       status: "New"
     };
-
-    console.log(customImage)
 
     try {
       const response = await NewOrder(orderPayload);
@@ -148,20 +145,25 @@ export default function OrderForms() {
   const customItemsTotal = customItems.reduce((sum, item) => sum + item.price, 0);
   const totalPrice = ((product?.price ?? 0) + customItemsTotal) * qty;
 
-  const handleOpenModal = () => setIsModalOpen(true);
+  const handleOpenModal = () => {
+  if (!customImageF || !customImageB) {
+    alert("Debe confirmar el diseño de la playera antes de enviar la orden.");
+    return;
+  }
+  setIsModalOpen(true);
+};
+
   const handleCloseModal = () => setIsModalOpen(false);
 
   return (
     <div>
       <Header />
 
-      {product && (
-        <Editor
-          product={product}
-          addCustomItem={addCustomItem}
-          onConfirmDesign={handleDesignConfirm} // <-- aquí
-        />
-      )}
+      <Editor
+        product={product}
+        addCustomItem={addCustomItem}
+        onConfirmDesign={handleDesignConfirm}
+      />
 
       <div className={styles.detailsSection}>
         <h2>Detalles de la orden</h2>
@@ -177,7 +179,16 @@ export default function OrderForms() {
         </label>
         <p>Precio Total: <strong>${totalPrice.toFixed(2)}</strong></p>
         <div className={styles.buttonContainer}>
-          <button className={styles.orderButton} onClick={handleOpenModal}>
+          <button
+            className={styles.orderButton}
+            onClick={() => {
+              if (!customImageF || !customImageB) {
+                alert("Debe confirmar el diseño de la playera antes de enviar la orden.");
+                return;
+              }
+              handleOpenModal();
+            }}
+          >
             Confirmar su orden
           </button>
         </div>
@@ -239,12 +250,6 @@ export default function OrderForms() {
 
             <p>Total a pagar: <strong>${totalPrice.toFixed(2)}</strong></p>
             <div className={styles.modalBody}>
-              {customImage && (
-                <div className={styles.imageContainer}>
-                  <Image src={customImage} alt="Custom design" width={300} height={300} />
-                </div>
-              )}
-
               <div className={styles.tableContainer}>
                 <table className={styles.detailsTable}>
                   <thead>
