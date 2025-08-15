@@ -181,7 +181,10 @@ class Editor extends Component<Props, State> {
           <Card className="shadow-sm">
             <Card.Body>
               <Card.Title>Agregar logo</Card.Title>
-              <ImageUploadModal canvas={controller.canvas} />
+              <ImageUploadModal 
+              canvas={controller.canvas} 
+              onImageAdded={this.notifyAddImageItem} 
+              />
             </Card.Body>
           </Card>
         </Col>

@@ -4,12 +4,14 @@ import { fabric } from "fabric";
 
 interface Props {
   canvas: fabric.Canvas;
+  onImageAdded?: () => void;
 }
 
-function ImageUploadModal({ canvas }: Props): ReactElement {
+function ImageUploadModal({ canvas, onImageAdded }: Props): ReactElement {
   const [show, setShow] = useState(false);
   const [imageURL, setImageURL] = useState("");
   const [imageName, setImageName] = useState("image");
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -25,9 +27,16 @@ function ImageUploadModal({ canvas }: Props): ReactElement {
   };
 
   const handleImageUpload = () => {
+    if (!imageURL) return;
+
     fabric.Image.fromURL(imageURL, (img) => {
       img.scaleToHeight(400);
       canvas.add(img);
+      canvas.renderAll();
+
+      // Aquí llamamos a la función que suma el precio
+      if (onImageAdded) onImageAdded();
+
       handleClose();
     });
   };
@@ -44,18 +53,17 @@ function ImageUploadModal({ canvas }: Props): ReactElement {
           <Tabs defaultActiveKey="upload" id="uncontrolled-tab-example">
             <Tab eventKey="upload" title="Upload">
               <div className="py-2 px-2">
-              <Form.Group controlId="formFile">
-                <Form.Label>
-                  Upload an image from your computer <br />
-                  (png, jpg, jpeg, svg is officially supported)
-                </Form.Label>
-                <Form.Control
-                  type="file"
-                  accept="image/jpg,image/jpeg,image/png, .svg"
-                  onChange={handleFileOnChange}
-                />
-              </Form.Group>
-
+                <Form.Group controlId="formFile">
+                  <Form.Label>
+                    Upload an image from your computer <br />
+                    (png, jpg, jpeg, svg is officially supported)
+                  </Form.Label>
+                  <Form.Control
+                    type="file"
+                    accept="image/jpg,image/jpeg,image/png, .svg"
+                    onChange={handleFileOnChange}
+                  />
+                </Form.Group>
               </div>
             </Tab>
             <Tab eventKey="fromUrl" title="From URL">
